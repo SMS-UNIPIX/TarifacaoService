@@ -47,22 +47,10 @@ public class SmsConsumoSumarizadoService {
 	private ClienteProdutoRepository clienteProdutoRepository;
 
 	@Autowired
-	private ConsumoDiarioSMSRepository consumoDiarioRepository;
-
-	@Autowired
 	private ClienteRepository clienteRepository;
 
 	@Autowired
 	private ProdutoRepository produtoRepository;
-
-	@Autowired
-	private RespostaRepository respostaRepository;
-	
-	@Autowired
-	private CampanhaDocumentRepository campanhaRepository;
-
-	@Autowired
-	private CampanhaDashboardRepository campanhaDashRepository;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -255,34 +243,6 @@ public class SmsConsumoSumarizadoService {
 			produtoNome = produto.get().getNome();
 		}
 		return produtoNome;
-	}
-
-	public String diaSemana(String diaSemana) {
-		String nome = "";
-		
-		switch (diaSemana) {
-        case "SUNDAY":
-            nome = "domingo";
-            break;
-        case "MONDAY":
-            nome = "segunda";
-            break;
-        case "TUESDAY":
-        	nome = "terca";
-        	break;
-        case "WEDNESDAY":
-        	nome = "quarta";
-            break;
-        case "THURSDAY":
-        	nome = "quinta";
-            break;
-        case "FRIDAY":
-        	nome = "sexta";
-            break;
-        case "SATURDAY":
-        	nome = "sabado";
-		}
-		return nome;
 	}
 
 	public void refasDocRespostaSms() {
