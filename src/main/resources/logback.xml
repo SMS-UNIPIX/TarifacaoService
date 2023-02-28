@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>newRelic.log</file>
+        <!-- encoder changed -->
+        <encoder class="com.newrelic.logging.logback.NewRelicEncoder"/>
+    </appender>
+
+    <!-- The required New Relic ASYNC appender wraps the FILE appender -->
+    <appender name="ASYNC" class="com.newrelic.logging.logback.NewRelicAsyncAppender">
+        <appender-ref ref="FILE" />
+    </appender>
+
+    <root level="INFO">
+        <!-- ASYNC is one of the main appenders -->
+        <appender-ref ref="ASYNC" />
+
+        <!-- Send every message to normal console logging, as well. -->
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>
