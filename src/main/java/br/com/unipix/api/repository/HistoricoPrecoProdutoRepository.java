@@ -15,8 +15,8 @@ public interface HistoricoPrecoProdutoRepository extends JpaRepository<Historico
 	@Query(value="SELECT a.* FROM unipix.tb_cliente_produto a where a.cliente_id=?1 and a.produto_id=?2", nativeQuery=true)
 	HistoricoPrecoProduto findByAllClienteProduto(Long clienteId, Long produtoId);
 
-	@Query(value="SELECT a.* FROM unipix.tb_historico_preco_produto a where a.data_inicio<=?1", nativeQuery=true)
-	List<HistoricoPrecoProduto> findByAllDataAgendadaDiat(LocalDateTime dataAgendadaDia);
+	@Query(value="SELECT a.* FROM unipix.tb_historico_preco_produto a where a.data_inicio<=?1 and a.status=2", nativeQuery=true)
+	List<HistoricoPrecoProduto> findByAllDataAgendadaDia(LocalDateTime dataAgora);
 
 }
 

@@ -32,19 +32,18 @@ public class TarifacaoService {
 	@Autowired
 	private ClienteProdutoRepository clienteProdutoRepository;
 
-	//@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(fixedDelay = 600000000)
+	@Scheduled(cron = "0 */1 * * * *")
+	//@Scheduled(fixedDelay = 600000000)
 	public void executar() {
 		LocalDateTime dataAgora = LocalDateTime.now();
-		log.info("*****Inicio");
+		log.info("*****Inicio : "+LocalDateTime.now());
 		processaDia(dataAgora);
-		log.info("*****Fim");
-		
+		log.info("*****Fim    : "+LocalDateTime.now());		
 	}
 
 	@Transactional
 	public void processaDia(LocalDateTime dataAgora) {
-		List<HistoricoPrecoProduto> listaDia = historicoPrecoRepository.findByAllDataAgendadaDiat(dataAgora);
+		List<HistoricoPrecoProduto> listaDia = historicoPrecoRepository.findByAllDataAgendadaDia(dataAgora);
 		
 		if(listaDia!=null && listaDia.size()>0) {
 			for (HistoricoPrecoProduto lista : listaDia) {
@@ -67,7 +66,7 @@ public class TarifacaoService {
 
 					//Gravo no historico o valor do produto vigente
 					HistoricoPrecoProduto historicoNovo = HistoricoPrecoProduto.builder()
-						.id(null)
+						.id(lista.getId())
 						.clienteId(lista.getClienteId())
 						.produtoId(lista.getProdutoId())
 						.usuarioId(lista.getUsuarioId())
@@ -78,8 +77,13 @@ public class TarifacaoService {
 					historicoPrecoRepository.saveAndFlush(historicoNovo);
 					
 					//Atualizo o valor do produto
-					cliProd.setValor(valorAnt);
+					cliProd.setValor(lista.getValor());
 					clienteProdutoRepository.saveAndFlush(cliProd);
+					
+					log.info("*****Cliente: "+historicoNovo.getClienteId().getId());
+					log.info("*****Produto: "+historicoNovo.getProdutoId().getId());
+					log.info("*****Dt.Inic: "+historicoNovo.getDataInicio());
+					log.info("*****Valor  : "+historicoNovo.getValor());
 				}
 			}
 		}
