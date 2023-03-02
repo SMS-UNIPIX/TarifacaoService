@@ -49,22 +49,37 @@ public class TarifacaoService {
 			for (HistoricoPrecoProduto lista : listaDia) {
 				ClienteProduto cliProd = clienteProdutoRepository.findByAllClienteProduto(lista.getClienteId().getId(), lista.getProdutoId().getId());
 				if(cliProd!=null) {
+					HistoricoPrecoProduto historicoAntigo = new HistoricoPrecoProduto();
 					BigDecimal valorAnt = cliProd.getValor();
 
-					//Gravo no historico o valor do produto vencido
-					HistoricoPrecoProduto historicoAntigo = HistoricoPrecoProduto.builder()
-						.id(null)
-						.clienteId(lista.getClienteId())
-						.produtoId(lista.getProdutoId())
-						.usuarioId(lista.getUsuarioId())
-						.valor(valorAnt)
-						.status(StatusHistoricoEnum.VENCIDO)
-						.dataInicio(lista.getDataInicio())
-						.dataFim(dataAgora)
-						.build();
+					//Atualizo o status de vigente para vencido
+					List<HistoricoPrecoProduto> listaVigente = historicoPrecoRepository.findByAllClienteProdutoStatus(lista.getClienteId().getId(), lista.getProdutoId().getId(), StatusHistoricoEnum.VIGENTE);
+					if(listaVigente!=null && listaVigente.size()>0) {
+						historicoAntigo = HistoricoPrecoProduto.builder()
+							.id(listaVigente.get(0).getId())
+							.clienteId(listaVigente.get(0).getClienteId())
+							.produtoId(listaVigente.get(0).getProdutoId())
+							.usuarioId(listaVigente.get(0).getUsuarioId())
+							.valor(listaVigente.get(0).getValor())
+							.status(StatusHistoricoEnum.VENCIDO)
+							.dataInicio(listaVigente.get(0).getDataInicio())
+							.dataFim(dataAgora)
+							.build();
+					}else {//Caso não tenha nenhum status vigente
+						historicoAntigo = HistoricoPrecoProduto.builder()
+							.id(null)
+							.clienteId(lista.getClienteId())
+							.produtoId(lista.getProdutoId())
+							.usuarioId(lista.getUsuarioId())
+							.valor(valorAnt)
+							.status(StatusHistoricoEnum.VENCIDO)
+							.dataInicio(lista.getDataInicio())
+							.dataFim(dataAgora)
+							.build();						
+					}
 					historicoPrecoRepository.saveAndFlush(historicoAntigo);
 
-					//Gravo no historico o valor do produto vigente
+					//Atualizo o status de agendado para vigente
 					HistoricoPrecoProduto historicoNovo = HistoricoPrecoProduto.builder()
 						.id(lista.getId())
 						.clienteId(lista.getClienteId())
